@@ -8,6 +8,10 @@
  TODO:
  - is there some magic we can add with Euler?
     0 = e^2pi*i - 1
+
+ Inspiration & Reference:
+ - <http://www.tylerlhobbs.com/works/series/progress>
+ - <http://programarcadegames.com/index.php?chapter=introduction_to_graphics&lang=en#section_5>
 """
 
 import pygame
@@ -20,24 +24,21 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-screen_size = (400, 300)
+screen_size = (640, 360)
 
 def get_c1(c, max_iterations):
     a = c[0]
     b = c[1]
-    n = 0
-    while n < max_iterations:
+    for n in range(max_iterations):
         aa = a * a
         bb = b * b
         twoab = 2.0 * a * b
         a = aa - bb + c[0]
         b = twoab + c[1]
         # Infinty in our finite world is simple, let's just consider it 16
-        # if (aa**aa + bb*bb)**(1/2.0) > 4.0:
-        if abs(aa**aa + bb*bb) > 16.0:
+        if (aa + bb)**(1/2.0) > 4.0:
+        # if abs(aa*aa + bb*bb) > 16.0:
             return n
-            # break
-        n += 1
 
 def get_c2(c, max_iterations):
     """
@@ -49,45 +50,55 @@ def get_c2(c, max_iterations):
         Z = a*a + 2*a*bi - b*b
         Z = a*a-b*b + 2abi
     """
-    n = 0
 
     # initially z is 0, so we can simplyify
     a, b = c
-    while n<max_iterations:
+    for n in range(max_iterations):
         aa = a*a
         bb = b*b
-        a, b = aa - bb + c[0], 2.0 * a * b + c[1]
-        if abs(aa + bb) > 16.0:
+        if (aa + bb) > 16:
             return n
-        n += 1
+        a, b = aa - bb + c[0], 2.0 * a * b + c[1]
+        # if abs(aa*aa + bb*bb) > 16.0:
+        # if (aa*aa + bb*bb)**(1/2.0) > 4.0:
 
 def get_c3(c, max_iterations):
     c_ = complex(*c)
-    n = 0
     z = 0
-    while n<max_iterations:
+    for n in range(max_iterations):
         z = z*z + c_
         if cmath.polar(z)[0] > 4.0:
             return n
-        n += 1
+
+class ScreenRange:
+    def __init__(self, x, min, max):
+        self.x = x
+        self.min = min
+        self.max = max
+        self.dx = (max-min)/x
+    def get_iter(self):
+        out_r = self.min
+        for screen_x in range(self.x):
+            yield screen_x, out_r
+            out_r += self.dx
 
 def draw():
-    w = 4
+    w = 4.0
     h = w * screen_size[1] / screen_size[0]
-    mins = (-w/2, -h/2)
+    mins = (-w/1.61, -h/2)
     maxs = (mins[0] + w, mins[1] + h)
-    dx = w / screen_size[0]
-    dy = h / screen_size[1]
     max_iterations = 100
 
     x = mins[0]
 
+    xr = ScreenRange(screen_size[0], mins[0], maxs[0])
+    yr = ScreenRange(screen_size[1], mins[1], maxs[1])
+
     pixel_arr = pygame.PixelArray(screen)
     compute_time = 0
 
-    for screen_x in range(screen_size[0]):
-        y = mins[1]
-        for screen_y in range(screen_size[1]):
+    for screen_x, x in xr.get_iter():
+        for screen_y, y in yr.get_iter():
             t1 = time.time ()
 
             # n = get_c1((x, y), max_iterations)
@@ -97,11 +108,9 @@ def draw():
             t2 = time.time ()
             compute_time += t2-t1
             if n is not None:
-                cc = 255.0 * n / max_iterations
-                color = (cc, cc, cc)
+                cc = 255.0 * (n / max_iterations)**(0.5)
+                color = (0.8*cc + 0.2*(255-cc), 0, 0.2*cc + 0.8*(255-cc))
                 pixel_arr[screen_x, screen_y] = color
-            y += dy
-        x += dx
     print(compute_time)
 #    pygame.surfarray.blit_array(screen, pixels)
 
