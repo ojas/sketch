@@ -17,12 +17,7 @@
 import pygame
 import cmath
 import time
-
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+from numba import jit
 
 screen_size = (640, 360)
 
@@ -40,6 +35,7 @@ def get_c1(c, max_iterations):
         # if abs(aa*aa + bb*bb) > 16.0:
             return n
 
+@jit
 def get_c2(c, max_iterations):
     """
         Z = Z² + C
@@ -56,19 +52,20 @@ def get_c2(c, max_iterations):
     for n in range(max_iterations):
         aa = a*a
         bb = b*b
-        if (aa + bb) > 16:
+        if (aa + bb) > 4:
             return n
         a, b = aa - bb + c[0], 2.0 * a * b + c[1]
         # if abs(aa*aa + bb*bb) > 16.0:
         # if (aa*aa + bb*bb)**(1/2.0) > 4.0:
 
+@jit
 def get_c3(c, max_iterations):
     c_ = complex(*c)
     z = 0
     for n in range(max_iterations):
-        z = z*z + c_
-        if cmath.polar(z)[0] > 4.0:
+        if abs(z) > 4:
             return n
+        z = z*z + c_
 
 class ScreenRange:
     def __init__(self, x, min, max):
@@ -147,7 +144,7 @@ while not done:
     # background image.
 
     if s == 0:
-        screen.fill(BLACK)
+        screen.fill((0,0,0))
         draw()
         s = 1
 

@@ -15,4 +15,4 @@
   1. You may see an UnauthorizedAccess error message. Follow the link in the
      message and run Set-ExecutionPolicy as needed. e.g.
      `Set-ExecutionPolicy -ExecutionPolicy Unrestricted`
-5. `pip install -r requirements.txt`
+6. `pip install -r requirements.txt`
