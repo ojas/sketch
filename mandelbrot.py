@@ -12,6 +12,8 @@
  Inspiration & Reference:
  - <http://www.tylerlhobbs.com/works/series/progress>
  - <http://programarcadegames.com/index.php?chapter=introduction_to_graphics&lang=en#section_5>
+ - Optimizations: <https://www.ibm.com/developerworks/community/blogs/jfp/entry/How_To_Compute_Mandelbrodt_Set_Quickly?lang=en>
+ - Colors & more: <https://www.ibm.com/developerworks/community/blogs/jfp/entry/My_Christmas_Gift?lang=en>
 """
 
 import pygame
